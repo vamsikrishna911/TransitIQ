@@ -12,7 +12,7 @@ import {
   Layers,
   ArrowRight
 } from 'lucide-react';
-import { LeafletTransitMap } from './LeafletTransitMap';
+import { UnifiedTransitMap } from './UnifiedTransitMap';
 import { TransitStop, TransitConnection } from '../types/transit';
 
 interface NetworkViewProps {
@@ -121,7 +121,7 @@ export const NetworkView: React.FC<NetworkViewProps> = ({
             {stops.length} Nodes · {connections.length} Segments
           </span>
         </div>
-        <LeafletTransitMap stops={stops} connections={connections} height="420px" />
+        <UnifiedTransitMap stops={stops} connections={connections} height="420px" />
       </div>
 
       {/* Adjacency List & Edge Registry */}

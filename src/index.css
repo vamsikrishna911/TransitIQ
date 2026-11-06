@@ -73,3 +73,24 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
+
+/* Animated route polyline & leading pulse marker */
+@keyframes route-head-pulse {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.8), 0 0 10px rgba(0, 229, 255, 0.9);
+  }
+  70% {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 14px rgba(0, 229, 255, 0), 0 0 20px rgba(0, 229, 255, 0.7);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(0, 229, 255, 0), 0 0 10px rgba(0, 229, 255, 0.9);
+  }
+}
+
+.route-head-marker {
+  animation: route-head-pulse 1.4s infinite ease-out;
+}
+

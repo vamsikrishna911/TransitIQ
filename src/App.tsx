@@ -18,6 +18,8 @@ import {
   TransportMode
 } from './types/transit';
 
+import { AlertTriangle, ExternalLink } from 'lucide-react';
+
 export default function App() {
   const [currentView, setCurrentView] = useState<NavView>('dashboard');
   const [stops, setStops] = useState<TransitStop[]>([]);
@@ -25,6 +27,18 @@ export default function App() {
   const [analytics, setAnalytics] = useState<NetworkAnalytics | null>(null);
   const [isBackendHealthy, setIsBackendHealthy] = useState<boolean>(true);
   const [isMobileOpen, setIsMobileOpen] = useState<boolean>(false);
+  const [quotaExceeded, setQuotaExceeded] = useState<boolean>(false);
+
+  // Listen for Google Maps quota exceeded event (Tier 2 quota defense)
+  useEffect(() => {
+    const handleQuotaExceeded = () => {
+      setQuotaExceeded(true);
+    };
+    window.addEventListener('gmp-quota-exceeded', handleQuotaExceeded);
+    return () => {
+      window.removeEventListener('gmp-quota-exceeded', handleQuotaExceeded);
+    };
+  }, []);
 
   // Planner state
   const [plannerSource, setPlannerSource] = useState<string>('PNBS');
@@ -210,6 +224,25 @@ export default function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        {quotaExceeded && (
+          <div className="bg-amber-950/90 border-b border-amber-500/50 text-amber-200 px-4 py-2.5 text-xs flex items-center justify-between gap-3 z-50">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>
+                <strong>Google Maps Demo Quota Limit:</strong> The demo key quota has been reached for today. The application has automatically switched to the Leaflet OpenStreetMap fallback engine.
+              </span>
+            </div>
+            <a
+              href="https://developers.google.com/maps/ai/ai-studio?utm_campaign=gmp_mcp_codeassist_v1_aistudio#quota_exceeded_errors"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-amber-300 hover:text-white underline font-medium shrink-0"
+            >
+              Learn More <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        )}
+
         <Header
           currentView={currentView}
           onOpenImport={() => setCurrentView('network')}

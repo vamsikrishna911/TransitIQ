@@ -14,9 +14,14 @@ import {
   Info,
   Timer,
   Award,
-  ChevronRight
+  ChevronRight,
+  Share2,
+  Download,
+  FileJson,
+  FileText
 } from 'lucide-react';
-import { LeafletTransitMap } from './LeafletTransitMap';
+import { UnifiedTransitMap } from './UnifiedTransitMap';
+import { RouteExportModal } from './RouteExportModal';
 import {
   TransitStop,
   TransitConnection,
@@ -68,6 +73,7 @@ export const RoutePlannerView: React.FC<RoutePlannerViewProps> = ({
   const [optimizeBy, setOptimizeBy] = useState<OptimizationCriterion>('distance');
   const [mode, setMode] = useState<TransportMode>('bus');
   const [showComparison, setShowComparison] = useState<boolean>(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,9 +250,19 @@ export const RoutePlannerView: React.FC<RoutePlannerViewProps> = ({
                   </span>
                   <h4 className="text-sm font-bold text-slate-100">{activeRoute.algorithm}</h4>
                 </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-950/70 border border-cyan-800/60 font-mono text-xs text-cyan-300">
-                  <Timer className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>{activeRoute.executionTimeMs} ms</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsExportModalOpen(true)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-800/80 text-cyan-300 font-medium text-xs transition-colors shadow-sm"
+                    title="Export route as JSON or shareable text summary"
+                  >
+                    <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Export Plan</span>
+                  </button>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 font-mono text-xs text-slate-300">
+                    <Timer className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>{activeRoute.executionTimeMs} ms</span>
+                  </div>
                 </div>
               </div>
 
@@ -347,6 +363,28 @@ export const RoutePlannerView: React.FC<RoutePlannerViewProps> = ({
                   })}
                 </div>
               </div>
+
+              {/* Quick Export Action Bar */}
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between gap-2">
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <Download className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Save Travel Plan:</span>
+                </span>
+                <button
+                  onClick={() => setIsExportModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-cyan-200 border border-cyan-900/60 text-xs font-semibold transition-colors"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Export JSON / Summary</span>
+                </button>
+              </div>
+
+              {/* Export Modal */}
+              <RouteExportModal
+                route={activeRoute}
+                isOpen={isExportModalOpen}
+                onClose={() => setIsExportModalOpen(false)}
+              />
             </div>
           )}
         </div>
@@ -367,7 +405,7 @@ export const RoutePlannerView: React.FC<RoutePlannerViewProps> = ({
           </div>
 
           <div className="flex-1">
-            <LeafletTransitMap
+            <UnifiedTransitMap
               stops={stops}
               connections={connections}
               activeRoute={activeRoute}

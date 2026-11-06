@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Chart, registerables } from 'chart.js';
 import {
   MapPin,
@@ -12,7 +12,8 @@ import {
   TrendingUp,
   Sparkles
 } from 'lucide-react';
-import { LeafletTransitMap } from './LeafletTransitMap';
+import { UnifiedTransitMap } from './UnifiedTransitMap';
+import { RouteExportModal } from './RouteExportModal';
 import { TransitStop, TransitConnection, NetworkAnalytics, RouteCalculationResult } from '../types/transit';
 
 Chart.register(...registerables);
@@ -34,6 +35,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 }) => {
   const chartCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstanceRef = useRef<Chart | null>(null);
+  const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
 
   // Render Degree Distribution Chart
   useEffect(() => {
@@ -223,16 +225,42 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </p>
             </div>
             <span className="text-xs font-mono px-2 py-0.5 rounded bg-cyan-950/70 border border-cyan-800/50 text-cyan-400">
-              CartoDB Dark Matter
+              Interactive Multi-Engine
             </span>
           </div>
 
-          <LeafletTransitMap
+          <UnifiedTransitMap
             stops={stops}
             connections={connections}
             activeRoute={activeRoute}
             height="440px"
           />
+
+          {activeRoute && activeRoute.success && (
+            <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-800/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+                <span className="text-xs text-slate-200">
+                  Active Route: <strong>{activeRoute.path[0]?.name}</strong> &rarr; <strong>{activeRoute.path[activeRoute.path.length - 1]?.name}</strong> ({activeRoute.totalDistance.toFixed(1)} km · {activeRoute.totalTime} min · ₹{activeRoute.totalCost})
+                </span>
+              </div>
+              <button
+                onClick={() => setIsExportModalOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 text-xs font-semibold transition-colors shrink-0"
+              >
+                <Share2 className="w-3.5 h-3.5" />
+                <span>Export Travel Plan</span>
+              </button>
+            </div>
+          )}
+
+          {activeRoute && (
+            <RouteExportModal
+              route={activeRoute}
+              isOpen={isExportModalOpen}
+              onClose={() => setIsExportModalOpen(false)}
+            />
+          )}
         </div>
 
         {/* Station Connectivity Chart & Quick Search */}
