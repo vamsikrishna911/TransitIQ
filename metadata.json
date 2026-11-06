@@ -1,0 +1,6 @@
+{
+  "name": "TransitIQ",
+  "description": "TransitIQ – Public Transportation Route Analytics and Optimization System using Data Structures and Algorithms including Dijkstra, BFS, A* Search, and Binary Min-Heap Priority Queue.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
